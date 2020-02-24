@@ -1,6 +1,6 @@
 
 
-#####################   Libraries   ###########################
+# Libraries ---------------------------------------------------------------
 
 library("shiny")
 library("shinydashboard")
@@ -13,9 +13,9 @@ library("moments")
 library("tseries")
 library("Quandl")
 library("leaflet")
-library("highcharter")
 
-####################   UI   ##########################
+
+# UI ----------------------------------------------------------------------
 
 ui <- dashboardPage(    
   skin = "blue",
@@ -24,8 +24,9 @@ ui <- dashboardPage(
     titleWidth = 250
   ),
   
-  ###################   SIDEBAR   ###############
-  
+
+# Sidebar -----------------------------------------------------------------
+
   dashboardSidebar(
     width = 250,
     sidebarMenu(
@@ -47,8 +48,9 @@ ui <- dashboardPage(
     )
   ),
   
-  ##################   BODY   #######################
-  
+
+# Body --------------------------------------------------------------------
+
   dashboardBody(
     tabItems(
       tabItem(
@@ -70,8 +72,7 @@ ui <- dashboardPage(
                                             tags$cite(h2(strong("George Edward Pelham Box (1919 - 2013)"))))),
                         column(5, img(src='http://bulletin.imstat.org/wp-content/uploads/42_05-George-E-P-Box.jpg', align = "right"))))
         )
-      )
-      ,
+      ),
       tabItem(
         tabName = "AP",
         fluidRow(h1(strong("Apresentação"), align = "center")),
@@ -378,7 +379,9 @@ ui <- dashboardPage(
         )
       ),
       
-      ########################## STATS  MET ######################################
+
+# STATS  MET --------------------------------------------------------------
+
       tabItem(
         tabName = "MET3",
         fluidRow(h1(strong("Stats"), align = "center")),
@@ -459,8 +462,9 @@ ui <- dashboardPage(
           )
         )
       ),
-      
-      ########################  GRAPHS MET ###########################
+
+# GRAPHS MET --------------------------------------------------------------
+
       tabItem(
         tabName = "MET4",
         fluidRow(h1(strong("Gráficos"), align = "center")),
@@ -470,8 +474,9 @@ ui <- dashboardPage(
                 h3("Em breve")))
         )
       ),
-      
-      #######################  MET   MODELOS	###########################
+
+# MET   MODELOS -----------------------------------------------------------
+
       tabItem(
         tabName = "MET5",
         fluidRow(h1(strong("Modelos"), align = "center")),
@@ -526,8 +531,9 @@ ui <- dashboardPage(
           )
         )
       ),
-      
-      ########################## Análise Conjuntura SC #################
+
+# Análise Conjuntura SC ---------------------------------------------------
+
       tabItem(
         tabName = "AN",
         fluidRow(h1(strong("Conjuntura"), align = "center")),
@@ -537,8 +543,9 @@ ui <- dashboardPage(
                 h3("box")))
         )
       ),
-      
-      ########################## Contexto da conjuntura ###################
+
+# Contexto da conjuntura --------------------------------------------------
+
       tabItem(
         tabName = "ANC",
         fluidRow(h1(strong("Introdução"), align = "center")),
@@ -550,8 +557,9 @@ ui <- dashboardPage(
                 h3("Após feita a análise descritiva, o usuário poderá partir para a “análise indutiva”, onde terá meios para prever valores em períodos futuros através do modelo ARIMA. Fique atento a seleção correta da série, no tamanho da amostra e nos parâmetros. Na aba “análise indutiva” haverá meios para que o usuário selecione os parâmetros do modelo ARIMA a que lhe pareçam fazer mais sentido, no entanto, extremamente difícil é a escolha dos mesmos. Sendo assim, há a possibilidade de seleção automática do modelo através da função auto.arima(). Dessa maneira, o usuário encontrará a série que possui a menor medida de grau de ajuste e, teoricamente, o melhor modelo não viesado.")))
         )
       ),
-      
-      ############################ Análise Descritiva SC ###################
+
+# Análise Descritiva SC ---------------------------------------------------
+
       tabItem(
         tabName = "AND",
         fluidRow(h1(strong("Análise Descritiva"), align = "center")),
@@ -704,13 +712,13 @@ ui <- dashboardPage(
             solidHeader = T,
             status = "primary",
             width = 8,
-            "Under construction"
+            "..."
           )
         )
       ),
-      
-      ################################  Análise Indutiva  ######################
-      
+
+# Análise Indutiva --------------------------------------------------------
+
       tabItem(
         tabName = "ANI",
         fluidRow(h1(strong("Análise Indutiva"), align = "center")),
@@ -983,7 +991,8 @@ ui <- dashboardPage(
   
 )
 
-##################   SERVER   ####################
+# SERVER ------------------------------------------------------------------
+
 server <- function(input, output){
   
   SERIEADraw <- reactive({
@@ -1035,14 +1044,16 @@ server <- function(input, output){
     } else if(input$MARKAD != "m1" & input$MARKAD == "m2"){
       GLST <- GLST + geom_hline(yintercept = median(SERIEADts()[input$SLDAD[1]:input$SLDAD[2]]), color = "blue")
     }
-    GLST
+    GLST+
+      theme_minimal()
   })
   
   output$LINS <- renderPlotly({
     ggseasonplot(ts(SERIEADts()[input$SLDAD[1]:input$SLDAD[2]], start = c(as.numeric(substring(SERIEADraw()[input$SLDAD[1],1],1,4)), as.numeric(substring(SERIEADraw()[input$SLDAD[1],1],6,7))), frequency = 12))+
       labs(title = "Gráfico de linhas sazonais",
            x = "Tempo",
-           y = "Y")
+           y = "Y")+
+      theme_minimal()
   })
   
   
@@ -1050,7 +1061,8 @@ server <- function(input, output){
     ggsubseriesplot(ts(SERIEADts()[input$SLDAD[1]:input$SLDAD[2]], start = c(as.numeric(substring(SERIEADraw()[input$SLDAD[1],1],1,4)), as.numeric(substring(SERIEADraw()[input$SLDAD[1],1],6,7))), frequency = 12))+
       labs(title = "Gráfico de subséries",
            x = "Tempo",
-           y = "Y")
+           y = "Y")+
+      theme_minimal()
   })
   
   
@@ -1077,7 +1089,8 @@ server <- function(input, output){
     } else if(input$MARKAD != "m1" & input$MARKAD == "m2"){
       BP <- BP + geom_hline(yintercept = median(SP$DADOS), color = "blue")
     }
-    BP
+    BP+
+      theme_minimal()
   })
   
   output$BPVAD <- renderPlotly({
@@ -1103,7 +1116,8 @@ server <- function(input, output){
     } else if(input$MARKAD != "m1" & input$MARKAD == "m2"){
       VP <- VP + geom_hline(yintercept = median(SP$DADOS), color = "blue")
     }
-    VP
+    VP+
+      theme_minimal()
   })
   
   output$DENSAD <- renderPlotly({
@@ -1124,7 +1138,8 @@ server <- function(input, output){
     } else if(input$MARKAD != "m1" & input$MARKAD == "m2"){
       DENS <- DENS + geom_vline(xintercept = median(SS$C), color = "blue")
     }
-    DENS <- ggplotly(DENS)
+    DENS <- ggplotly(DENS+
+                       theme_minimal())
     DENS
   })
   
@@ -1137,7 +1152,8 @@ server <- function(input, output){
           ),
           type  = input$SISAD
         )
-      )
+      )+
+        theme_minimal()
     )
   })
   
@@ -1146,7 +1162,8 @@ server <- function(input, output){
       ggAcf(
         ts(SERIEADts()[input$SLDAD[1]:input$SLDAD[2]], start = c(as.numeric(substring(SERIEADraw()[input$SLDAD[1],1],1,4)), as.numeric(substring(SERIEADraw()[input$SLDAD[1],1],6,7))), frequency = 12), 
         lag.max = 60)+
-        labs(title = "Função de auto-correlação")
+        labs(title = "Função de auto-correlação")+
+        theme_minimal()
     )
   })
   
@@ -1155,7 +1172,8 @@ server <- function(input, output){
       ggPacf(
         ts(SERIEADts()[input$SLDAD[1]:input$SLDAD[2]], start = c(as.numeric(substring(SERIEADraw()[input$SLDAD[1],1],1,4)), as.numeric(substring(SERIEADraw()[input$SLDAD[1],1],6,7))), frequency = 12), 
         lag.max = 60)+
-        labs(title = "Função de auto-correlação parcial")
+        labs(title = "Função de auto-correlação parcial")+
+        theme_minimal()
     )
   })
   
@@ -1242,7 +1260,8 @@ server <- function(input, output){
     autoplot(FF)+
       autolayer(FF$mean, color = "blue")+
       labs(y = "Y", x = "Tempo")+
-      theme(legend.position = "none")
+      theme(legend.position = "none")+
+      theme_minimal()
   })
   
   output$FITAI <- renderPlotly({
@@ -1259,7 +1278,8 @@ server <- function(input, output){
                 alpha = 0.6, size = 1.2, col = "blue")+
       labs(y = "Y",
            x = "Observação",
-           title = "Ajuste do modelo")
+           title = "Ajuste do modelo")+
+      theme_minimal()
   })
   
   output$RESAI <- renderPlotly({
@@ -1272,7 +1292,8 @@ server <- function(input, output){
       geom_hline(yintercept = 0)+
       labs(title = "Distância entre o modelo e o observado",
            y = "Resíduos",
-           x = "Observações")
+           x = "Observações")+
+      theme_minimal()
   })
   
   output$DENSRESAI <- renderPlotly({
@@ -1293,7 +1314,8 @@ server <- function(input, output){
     } else if(input$MARKAI != "m1" & input$MARKAI == "m2"){
       PDENSAIII <- PDENSAIII + geom_vline(xintercept = median(residuals(ARIMAdata())), color = "blue")
     }
-    PDENSAIII <- ggplotly(PDENSAIII)
+    PDENSAIII <- ggplotly(PDENSAIII+
+                            theme_minimal())
     PDENSAIII
   })
   
@@ -1304,7 +1326,8 @@ server <- function(input, output){
           ARIMAdata()
         ), lag.max = 60
       )+
-        labs(title = "Função de auto-correlação dos resíduos")
+        labs(title = "Função de auto-correlação dos resíduos")+
+        theme_minimal()
     )
   })
   
@@ -1315,7 +1338,8 @@ server <- function(input, output){
           ARIMAdata()
         ), lag.max = 60
       )+
-        labs(title = "Função de auto-correlação parcial dos resíduos")
+        labs(title = "Função de auto-correlação parcial dos resíduos")+
+        theme_minimal()
     )
   })
   
@@ -1326,7 +1350,8 @@ server <- function(input, output){
     
     autoplot.zoo(ND)+
       autolayer(NF$mean, size = 0.8, color = "blue", alpha = 0.6)+
-      autolayer(as.ts(NB), size = 0.6, color = "red", alpha = 0.3)
+      autolayer(as.ts(NB), size = 0.6, color = "red", alpha = 0.3)+
+      theme_minimal()
   })
   
   output$TABLEAI <- DT::renderDataTable({
